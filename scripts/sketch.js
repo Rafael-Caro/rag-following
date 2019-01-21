@@ -4,6 +4,8 @@ var mainSpace = 600;
 
 var recordingsInfo;
 var recordingsList;
+var minHz;
+var maxHz;
 var pitchTrack;
 var trackFile;
 var track;
@@ -54,11 +56,23 @@ function setup () {
     .mouseClicked(player)
     .attribute("disabled", "true")
     .parent("sketch-holder");
-
-  background(205, 92, 92);
 }
 
-function draw () {}
+function draw () {
+  background(205, 92, 92);
+  if (!paused) {
+    var x = str(track.currentTime().toFixed(2));
+    var p = pitchTrack[x];
+    if (p >= minHz && p <= maxHz) {
+      var y = map(p, minHz, maxHz, height-15, 110);
+      print(x, p, y);
+      noFill();
+      stroke(0);
+      strokeWeight(1);
+      ellipse(extraSpaceW+mainSpace/2, y, 3, 3);
+    }
+  }
+}
 
 function start () {
   if (loaded) {
@@ -68,6 +82,9 @@ function start () {
   currentTime = 0;
   var currentRecording = recordingsInfo[recordingsList[select.value()]];
   trackFile = currentRecording.info.trackFile;
+  pitchSpace = currentRecording.melody.pitchSpace;
+  minHz = pitchSpace[0].pitch;
+  maxHz = pitchSpace[pitchSpace.length-1].pitch;
   pitchTrack = currentRecording.melody.pitchTrack;
   buttonPlay.html("Carga el audio");
   buttonPlay.removeAttribute("disabled");
