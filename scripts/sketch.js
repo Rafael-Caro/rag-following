@@ -2,6 +2,7 @@ var extraSpaceH = 0;
 var extraSpaceW = 0;
 var mainSpace = 600;
 var margin = 10;
+var easing = 0.1;
 
 var recordingsInfo;
 var recordingsList;
@@ -20,6 +21,7 @@ var buttonPlay;
 
 var cursorTop;
 var cursorBottom;
+var cursorY = 0;
 var navBoxH = 50;
 var navCursor;
 var navBox;
@@ -118,7 +120,8 @@ function draw () {
     var x = str(track.currentTime().toFixed(2));
     var p = pitchTrack[x];
     if (p >= minHz && p <= maxHz) {
-      var y = map(p, minHz, maxHz, buttonPlay.y-margin*2, extraSpaceH + margin*5 + 50);
+      var targetY = map(p, minHz, maxHz, cursorBottom, cursorTop);
+      cursorY += (targetY - cursorY) * easing;
       // print(x, p, y);
       noStroke();
       // fill(120, 0, 0);
@@ -126,7 +129,7 @@ function draw () {
       // noFill();
       // stroke(0);
       // strokeWeight(1);
-      ellipse(extraSpaceW+mainSpace/2, y, 5, 5);
+      ellipse(extraSpaceW+mainSpace/2, cursorY, 5, 5);
     }
   }
 
