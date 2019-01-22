@@ -289,56 +289,69 @@
     "melody": {
       "pitchSpace": [
         {
-          "svara": "P̣",
-          "pitch": 114.5393219
+          "svara": "Pa",
+          "pitch": 114.5393219,
+          "function": ""
         },
         {
-          "svara": "Ḍ",
-          "pitch": 128.5662563
+          "svara": "Dha",
+          "pitch": 128.5662563,
+          "function": ""
         },
         {
-          "svara": "Ṇ",
-          "pitch": 144.3106995
+          "svara": "Ni",
+          "pitch": 144.3106995,
+          "function": "samvadi"
         },
         {
-          "svara": "S",
-          "pitch": 152.8919067
+          "svara": "Sa",
+          "pitch": 152.8919067,
+          "function": "sadja"
         },
         {
-          "svara": "R",
-          "pitch": 171.6154938
+          "svara": "Re",
+          "pitch": 171.6154938,
+          "function": ""
         },
         {
-          "svara": "G",
-          "pitch": 192.6320038
+          "svara": "Ga",
+          "pitch": 192.6320038,
+          "function": "vadi"
         },
         {
-          "svara": "M",
-          "pitch": 216.2222595
+          "svara": "Ma",
+          "pitch": 216.2222595,
+          "function": ""
         },
         {
-          "svara": "P",
-          "pitch": 229.0795898
+          "svara": "Pa",
+          "pitch": 229.0795898,
+          "function": ""
         },
         {
-          "svara": "D",
-          "pitch": 257.1325125
+          "svara": "Dha",
+          "pitch": 257.1325125,
+          "function": ""
         },
         {
-          "svara": "N",
-          "pitch": 288.6225586
+          "svara": "Ni",
+          "pitch": 288.6225586,
+          "function": "samvadi"
         },
         {
-          "svara": "Ṡ",
-          "pitch": 305.7850647
+          "svara": "Sa",
+          "pitch": 305.7850647,
+          "function": "sadja"
         },
         {
-          "svara": "Ṙ",
-          "pitch": 343.2323608
+          "svara": "Re",
+          "pitch": 343.2323608,
+          "function": ""
         },
         {
-          "svara": "Ġ",
-          "pitch": 383.0465698
+          "svara": "Ga",
+          "pitch": 383.0465698,
+          "function": "vadi"
         }
       ],
       "pitchTrack": {
