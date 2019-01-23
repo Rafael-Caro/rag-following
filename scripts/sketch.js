@@ -2,7 +2,7 @@ var extraSpaceH = 0;
 var extraSpaceW = 0;
 var mainSpace = 600;
 var margin = 10;
-var easing = 0.1;
+var easing = 0.5;
 var backColor;
 var frontColor;
 
@@ -10,10 +10,10 @@ var recordingsInfo;
 var recordingsList;
 var pitchSpace;
 var svaraList = [];
-var svaraRadius1 = 19;
+var soundList = {};
+var svaraRadius1 = 20;
 var svaraRadius2 = 17;
-var svaraRadius3 = 15;
-var svaraLine = 30;
+var svaraLine = 50;
 var minHz;
 var maxHz;
 var pitchTrack;
@@ -56,6 +56,7 @@ function setup () {
   imageMode(CENTER);
   textFont("Laila");
   strokeJoin(ROUND);
+  strokeCap(ROUND);
 
   backColor = color(240, 128, 128);
   frontColor = color(120, 0, 0);
@@ -118,7 +119,10 @@ function draw () {
   // line(0, cursorBottom, width, cursorBottom);
 
   for (var i = 0; i < svaraList.length; i++) {
-    svaraList[i].display();
+    svaraList[i].displayLines();
+  }
+  for (var i = 0; i < svaraList.length; i++) {
+    svaraList[i].displaySvara();
   }
 
   navBox.displayBack();
@@ -129,21 +133,19 @@ function draw () {
     clock.display();
   }
 
-  if (!paused) {
-    currentTime = track.currentTime();
+  if (loaded) {
+    if (!paused) {
+      currentTime = track.currentTime();
+    }
 
-    var x = str(track.currentTime().toFixed(2));
+    var x = str(currentTime.toFixed(2));
     var p = pitchTrack[x];
-    if (p >= minHz && p <= maxHz) {
+    if (p != "silence" && p >= minHz && p <= maxHz) {
       var targetY = map(p, minHz, maxHz, cursorBottom, cursorTop);
       cursorY += (targetY - cursorY) * easing;
-      // print(x, p, y);
-      noStroke();
-      // fill(120, 0, 0);
       fill("red");
-      // noFill();
-      // stroke(0);
-      // strokeWeight(1);
+      stroke(frontColor);
+      strokeWeight(1);
       ellipse(extraSpaceW+mainSpace/2, cursorY, 5, 5);
     }
   }
@@ -209,29 +211,38 @@ function CreateNavCursor () {
 
 function CreateSvara (svara) {
   this.x1 = extraSpaceW + mainSpace/2;
-  this.y = map(svara.pitch, minHz, maxHz, cursorBottom, cursorTop);
+  this.y = map(svara.cent, minHz, maxHz, cursorBottom, cursorTop);
   this.name = svara.svara;
+  this.key = svara.key;
   this.function = svara.function;
   if (this.function == "sadja") {
     this.radius = svaraRadius1;
+    this.extraX = 20;
     this.col = frontColor;
+    this.strokeW = 4;
+    this.lineW = 4;
     this.txtCol = backColor;
-    this.txtStyle = BOLD;
   } else if (this.function == "vadi") {
     this.radius = svaraRadius1;
+    this.extraX = 0;
     this.col = backColor;
+    this.strokeW = 4;
+    this.lineW = 2;
     this.txtCol = frontColor;
-    this.txtStyle = BOLD;
   } else if (this.function == "samvadi") {
     this.radius = svaraRadius2;
+    this.extraX = 0;
     this.col = backColor;
+    this.strokeW = 2;
+    this.lineW = 2;
     this.txtCol = frontColor;
-    this.txtStyle = NORMAL;
   } else {
-    this.radius = svaraRadius3;
-    this.col = backColor;
+    this.radius = svaraRadius2;
+    this.extraX = 0;
+    this.col = color(0, 0);
+    this.strokeW = 0;
+    this.lineW = 1;
     this.txtCol = frontColor;
-    this.txtStyle = NORMAL;
   }
   if (svaraList.length == 0) {
     this.position = 0;
@@ -240,31 +251,49 @@ function CreateSvara (svara) {
   } else {
     this.position = 0;
   }
-  this.x2 = this.x1 + svaraLine/2 + svaraRadius1 + (svaraRadius1*2 + margin) * this.position;
+  this.x2 = this.x1 + svaraLine/2 + (svaraRadius1*2 + margin) * this.position;
 
-  this.display = function () {
+  this.displayLines = function () {
     stroke(frontColor);
-    strokeWeight(1);
-    line(this.x1-svaraLine/2, this.y, this.x2, this.y)
+    strokeWeight(this.lineW);
+    line(this.x1-svaraLine/2-this.extraX, this.y, this.x2, this.y)
+  }
 
+  this.displaySvara = function () {
     stroke(frontColor);
-    strokeWeight(2);
+    strokeWeight(this.strokeW);
     fill(this.col);
-    ellipse(this.x2, this.y, this.radius, this.radius);
+    ellipse(this.x2 + svaraRadius1, this.y, svaraRadius1, svaraRadius1);
 
     textAlign(CENTER, CENTER);
     noStroke();
-    textSize(this.radius*0.8);
-    textStyle(this.txtStyle);
+    textSize(svaraRadius1*0.9);//this.radius*0.9);
+    textStyle(BOLD);//this.txtStyle);
     fill(this.txtCol);
-    text(this.name, this.x2, this.y);
+    text(this.name, this.x2 + svaraRadius1, this.y+this.radius*0.1);
+    stroke(frontColor);
+    strokeWeight(3);
+    fill(backColor);
+    textSize(svaraRadius1*0.7);
+    textStyle(NORMAL);
+    text(this.key, this.x2 + svaraRadius1 + textWidth(this.name), this.y + (svaraRadius1*0.9)/2)
   }
+}
+
+function createSound (svara) {
+  this.pitch = svara.pitch;
+  this.key = svara.key;
+  this.osc = new p5.Oscillator();
+  this.osc.setType("sawtooth");
+  this.osc.freq(this.pitch);
+  soundList[this.key] = this.osc;
 }
 
 function start () {
   if (loaded) {
     track.stop();
   }
+  paused = true;
   loaded = false;
   currentTime = 0;
   var currentRecording = recordingsInfo[recordingsList[select.value()]];
@@ -276,11 +305,14 @@ function start () {
     .html("+info");
   trackDuration = currentRecording.info.duration;
   pitchSpace = currentRecording.melody.pitchSpace;
-  minHz = pitchSpace[0].pitch;
-  maxHz = pitchSpace[pitchSpace.length-1].pitch;
+  minHz = pitchSpace[0].cent-100;
+  maxHz = pitchSpace[pitchSpace.length-1].cent+100;
+  svaraList = [];
+  soundList = {};
   for (var i = 0; i < pitchSpace.length; i++) {
     var svara = new CreateSvara(pitchSpace[i]);
     svaraList.push(svara);
+    createSound(pitchSpace[i]);
   }
   pitchTrack = currentRecording.melody.pitchTrack;
   clock = new CreateClock;
@@ -295,12 +327,12 @@ function CreateClock () {
   this.display = function () {
     this.now = niceTime(currentTime);
     this.clock = this.now + " / " + this.total;
-    textAlign(CENTER, BOTTOM);
+    textAlign(LEFT, BOTTOM);
     textSize(12);
     textStyle(NORMAL);
     noStroke();
     fill(50);
-    text(this.clock, extraSpaceW+mainSpace/2, buttonPlay.y+buttonPlay.height);
+    text(this.clock, margin, buttonPlay.y+buttonPlay.height);
   }
 }
 
@@ -348,6 +380,14 @@ function mouseClicked () {
   if (loaded) {
     navBox.clicked();
   }
+}
+
+function keyPressed () {
+  soundList[key.toLowerCase()].start();
+}
+
+function keyReleased () {
+  soundList[key.toLowerCase()].stop();
 }
 
 function niceTime (seconds) {
