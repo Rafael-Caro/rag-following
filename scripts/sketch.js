@@ -1,4 +1,4 @@
-var extraSpaceH = 0;
+var extraSpaceH = 45;
 var extraSpaceW = 0;
 var mainSpace = 600;
 var margin = 10;
@@ -51,6 +51,8 @@ function setup () {
   div.style("width: " + width + "px; margin: 10px auto; position: relative;");
   canvas.parent("sketch-holder");
 
+  background(254, 249, 231);
+
   ellipseMode(RADIUS);
   angleMode(DEGREES);
   imageMode(CENTER);
@@ -81,7 +83,7 @@ function setup () {
   }
   buttonPlay = createButton("Carga el audio")
     .size(120, 25)
-    .position(width - 120 - margin, height - margin * 2 - navBoxH - 25)
+    .position(width - 120 - margin, margin)
     .mouseClicked(player)
     .attribute("disabled", "true")
     .parent("sketch-holder");
@@ -90,11 +92,13 @@ function setup () {
   navCursor = new CreateNavCursor();
 
   cursorTop = extraSpaceH + margin*7 + 50;
-  cursorBottom = buttonPlay.y-margin*2;
+  cursorBottom = navBox.y1-margin*4;
 }
 
 function draw () {
-  background(backColor);
+  fill(backColor);
+  noStroke();
+  rect(extraSpaceW, extraSpaceH, width, height);
 
   textAlign(CENTER, TOP);
   textStyle(NORMAL);
@@ -113,9 +117,11 @@ function draw () {
   strokeWeight(1);
   textSize(20);
   fill(0, 150);
-  text(artist, extraSpaceW + mainSpace/2, extraSpaceW + margin*4 + 30);
+  text(artist, extraSpaceW + mainSpace/2, extraSpaceH + margin*4 + 30);
 
+  // stroke("red");
   // line(0, cursorTop, width, cursorTop);
+  // stroke("green");
   // line(0, cursorBottom, width, cursorBottom);
 
   for (var i = 0; i < svaraList.length; i++) {
