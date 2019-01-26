@@ -51,7 +51,7 @@ var currentTal = undefined;
 var talName;
 var currentAvart;
 var strokeRadius1 = 20;
-var strokeRadius2 = 17;
+var strokeRadius2 = 15;
 
 var failedLoading;
 var loaded = false;
@@ -117,8 +117,8 @@ function setup () {
   cursorTop = extraSpaceH + margin*7 + 50;
   cursorBottom = navBox.y1-margin*4;
   talX = extraSpaceW + margin + (mainSpace-2*margin)/3;
-  talY = extraSpaceH + cursorTop + (cursorBottom-cursorTop)/3;
-  talRadius = (mainSpace-2*margin)*0.25;
+  talY = cursorTop + (cursorBottom-cursorTop)/2.8 + strokeRadius1/2;
+  talRadius = (cursorBottom-cursorTop)/2.8;// (mainSpace-2*margin)*0.25;
   melCursorX = extraSpaceW + (mainSpace-2*margin)*0.75;
 }
 
@@ -203,6 +203,9 @@ function draw () {
       var talToDraw = talCircles[currentTal];
       for (var i = 0; i < talToDraw.strokeCircles.length; i++) {
         talToDraw.strokeCircles[i].display();
+      }
+      for (var i = 0; i < talToDraw.strokeCircles.length; i++) {
+        talToDraw.strokeCircles[i].displayTheka();
       }
       // for (var i = 0; i < talToDraw.icons.length; i++) {
       //   talToDraw.icons[i].display();
@@ -538,21 +541,26 @@ function CreateStrokeCircle (matra, vibhag, circleType, bol, avart) {
   this.bol = bol;
   var increment = 1;
   this.strokeWeight = 2;
+  this.txtW = 0;
 
   if (circleType == "sam") {
     if (vibhag == "tali") {
       this.col = frontColor;
+      this.txtCol = backColor;
     } else {
       this.col = backColor;
+      this.txtCol = frontColor;
     }
   } else if (vibhag == "tali") {
     this.col = frontColor;
+    this.txtCol = backColor;
   } else if (vibhag == "khali") {
     this.col = backColor;
+    this.txtCol = frontColor;
   }
 
   if (circleType == "sam") {
-    this.radius = strokeRadius1 * 1.2;
+    this.radius = strokeRadius1;
     this.txtSize = strokeRadius1 * 0.7;
     this.txtStyle = BOLD;
     this.bol = this.bol.toUpperCase();
@@ -571,8 +579,10 @@ function CreateStrokeCircle (matra, vibhag, circleType, bol, avart) {
     this.radius = strokeRadius2;
     this.txtSize = strokeRadius2 * 0.75;
     this.col = color(0, 0);
+    this.txtCol = frontColor;
     this.txtStyle = NORMAL;
     this.strokeWeight = 0;
+    this.txtW = 1;
     this.volume = 0.7;
     increment = 1.05;
   }
@@ -588,16 +598,20 @@ function CreateStrokeCircle (matra, vibhag, circleType, bol, avart) {
     strokeWeight(this.strokeWeight);
     fill(this.col);
     ellipse(0, 0, this.radius, this.radius);
+    pop();
+  }
 
-    if (true) { //(showTheka.checked()) {
-      textAlign(CENTER, CENTER);
-      noStroke();
-      fill(0);
-      textSize(this.txtSize);
-      textStyle(this.txtStyle);
-      rotate(90);
-      text(this.bol, 0, 0);
-    }
+  this.displayTheka = function () {
+    push();
+    translate(this.x, this.y);
+    textAlign(CENTER, CENTER);
+    stroke(backColor);
+    strokeWeight(this.txtW);
+    fill(this.txtCol);
+    textSize(this.txtSize);
+    textStyle(this.txtStyle);
+    rotate(90);
+    text(this.bol, 0, 0);
     pop();
   }
 }
@@ -714,7 +728,7 @@ function soundLoaded () {
 
 function failedLoad () {
   print("Loading failed");
-  failedLoad = True;
+  failedLoading = true;
   charger.angle = undefined;
 }
 
