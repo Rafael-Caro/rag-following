@@ -575,7 +575,7 @@ function CreateStrokeCircle (matra, vibhag, circleType, bol, avart) {
   } else if (circleType == 2){
     this.radius = strokeRadius2;
     this.txtSize = strokeRadius2 * 0.75;
-    this.txtStyle = NORMAL;
+    this.txtStyle = BOLD;
     this.volume = 0.7;
   } else {
     this.radius = strokeRadius2;
