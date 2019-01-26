@@ -4,6 +4,7 @@ var mainSpace = 600;
 var margin = 10;
 var easing = 0.5;
 var backColor;
+var backColorTrans;
 var frontColor;
 
 var recordingsInfo;
@@ -83,6 +84,7 @@ function setup () {
   strokeCap(ROUND);
 
   backColor = color(240, 128, 128);
+  backColorTrans = color(120, 0, 0, 100);
   frontColor = color(120, 0, 0);
 
   infoLink = select("#info-link");
@@ -331,7 +333,7 @@ function CreateNavCursor () {
       var talBox = talBoxes[i];
       if (this.x > talBox.x1 && this.x < talBox.x2) {
         talBox.on();
-        currentTal = talBox.name;
+        currentTal = talBox.tal;
         talName = talInfo[currentTal].name + "\n" + talInfo[currentTal].nameTrans;
         noTal = false;
       } else {
@@ -617,34 +619,33 @@ function CreateStrokeCircle (matra, vibhag, circleType, bol, avart) {
 }
 
 function CreateTalBox (tal) {
-  this.name = tal.tal;
+  this.tal = tal.tal;
+  this.name = talInfo[tal.tal].nameTrans;
   this.h = 25;
   this.x1 = map(tal.start, 0, trackDuration, navBox.x1+navCursorW/2, navBox.x2-navCursorW/2);
   this.x2 = map(tal.end, 0, trackDuration, navBox.x1+navCursorW/2, navBox.x2-navCursorW/2);
   this.w = this.x2-this.x1;
   this.boxCol = color(255, 100);
-  this.txtCol = color(100);
-  this.txtStyle = NORMAL;
   this.txtBorder = 0;
-  this.sam = tal.sam;
+  this.txtCol = color(75);
+  this.txtStyle = NORMAL;
   this.currentSamIndex = 0;
 
   this.off = function () {
-    this.boxCol = color(255);
-    this.txtCol = color(100);
-    this.txtStyle = NORMAL;
+    this.boxCol = color(255, 100);
+    this.txtCol = color(75);
     this.txtBorder = 0;
+    this.txtStyle = NORMAL;
   }
 
   this.on = function () {
-    this.boxCol = frontColor;
-    this.txtCol = color(0);
+    this.boxCol = backColorTrans;
+    this.txtCol = color(255);
+    this.txtBorder = 2;
     this.txtStyle = BOLD;
-    this.txtBorder = 1;
   }
 
   this.display = function () {
-    this.boxCol.setAlpha(100);
     fill(this.boxCol);
     noStroke();
     rect(this.x1, navBox.y1, this.w, this.h);
@@ -652,9 +653,7 @@ function CreateTalBox (tal) {
     textSize(this.h * 0.7);
     fill(this.txtCol);
     textStyle(this.txtStyle);
-    fill(0);
-    frontColor.setAlpha(255);
-    stroke(frontColor);
+    stroke(0);
     strokeWeight(this.txtBorder);
     text(this.name, this.x1+2, navBox.y1 + this.h*0.92);
   }
