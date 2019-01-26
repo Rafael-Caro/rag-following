@@ -6,6 +6,7 @@ var easing = 0.5;
 var backColor;
 var backColorTrans;
 var frontColor;
+var shadeColor;
 
 var recordingsInfo;
 var recordingsList;
@@ -86,6 +87,7 @@ function setup () {
   backColor = color(240, 128, 128);
   backColorTrans = color(120, 0, 0, 100);
   frontColor = color(120, 0, 0);
+  shadeColor = color(120, 0, 0);
 
   infoLink = select("#info-link");
   infoLink.position(width-60, extraSpaceH + margin*3.5 + 30);
@@ -201,6 +203,10 @@ function draw () {
     stroke(frontColor);
     strokeWeight(2);
     ellipse(0, 0, talRadius, talRadius);
+
+    shade.update();
+    shade.display();
+
     if (currentTal != undefined) {
       var talToDraw = talCircles[currentTal];
       for (var i = 0; i < talToDraw.strokeCircles.length; i++) {
@@ -213,8 +219,8 @@ function draw () {
       //   talToDraw.icons[i].display();
       // }
     }
-    talCursor.update();
-    talCursor.display();
+    // talCursor.update();
+    // talCursor.display();
   } else {
     charger.update();
     charger.display();
@@ -276,6 +282,7 @@ function start () {
     talCircles[tal.tal] = talCircle;
   }
   currentAvart = new CreateCurrentAvart();
+  shade = new CreateShade();
   clock = new CreateClock;
   buttonPlay.html("Carga el audio");
   buttonPlay.removeAttribute("disabled");
@@ -444,9 +451,6 @@ function CreateTalCursor () {
   this.y;
 
   this.update = function () {
-    if (!(currentTime >= currentAvart.start && currentTime <= currentAvart.end)) {
-      currentAvart.update();
-    }
     this.angle = map(currentTime, currentAvart.start, currentAvart.end, 0, 360);
     this.x = talRadius * cos(this.angle);
     this.y = talRadius * sin(this.angle);
@@ -462,6 +466,33 @@ function CreateTalCursor () {
     stroke(frontColor);
     strokeWeight(1);
     ellipse(this.x, this.y, 5, 5)
+  }
+}
+
+function CreateShade () {
+  this.x;
+  this.y;
+  this.angle;
+  this.alpha;
+  this.col = shadeColor;
+
+  this.update = function () {
+    if (!(currentTime >= currentAvart.start && currentTime <= currentAvart.end)) {
+      currentAvart.update();
+    }
+    this.angle = map(currentTime, currentAvart.start, currentAvart.end, 0, 360);
+    this.alpha = map(this.angle, 0, 360, 0, 255);
+    this.x = talRadius * cos(this.angle);
+    this.y = talRadius * sin(this.angle);
+  }
+  this.display = function () {
+    this.col.setAlpha(this.alpha);
+    fill(this.col);
+    noStroke();
+    arc(0, 0, talRadius, talRadius, 0, this.angle);
+    stroke(frontColor);
+    strokeWeight(1);
+    line(0, 0, this.x, this.y);
   }
 }
 
@@ -642,7 +673,7 @@ function CreateTalBox (tal) {
     this.boxCol = backColorTrans;
     this.txtCol = color(255);
     this.txtBorder = 2;
-    this.txtStyle = BOLD;
+    this.txtStyle = NORMAL;
   }
 
   this.display = function () {
