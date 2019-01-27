@@ -41,6 +41,7 @@ var navCursorW = 4;
 var samList = [];
 var melCursorX;
 var clock;
+var mpmTxt;
 
 var talInfo;
 var talCursor;
@@ -259,6 +260,14 @@ function draw () {
   for (var i = 0; i < talBoxes.length; i++) {
     talBoxes[i].display();
   }
+
+  textAlign(RIGHT, BOTTOM);
+  textSize(12);
+  textStyle(NORMAL);
+  noStroke();
+  fill(frontColor);
+  text(mpmTxt, extraSpaceW + margin + 65, navBox.y1 - margin/2);
+
   navBox.displayFront();
 }
 
@@ -275,6 +284,7 @@ function start () {
   samList = [];
   currentTal = undefined;
   charger.angle = undefined;
+  mpmTxt = undefined;
   var currentRecording = recordingsInfo[recordingsList[select.value()].mbid];
   trackFile = currentRecording.info.trackFile;
   rag = currentRecording.rag.name + " " + currentRecording.rag.nameTrans;
@@ -749,12 +759,12 @@ function CreateClock () {
   this.display = function () {
     this.now = niceTime(currentTime);
     this.clock = this.now + " / " + this.total;
-    textAlign(LEFT, BOTTOM);
+    textAlign(CENTER, BOTTOM);
     textSize(12);
     textStyle(NORMAL);
     noStroke();
-    fill(50);
-    text(this.clock, margin, buttonPlay.y+buttonPlay.height);
+    fill(frontColor);
+    text(this.clock, extraSpaceW + mainSpace/2, navBox.y1 - margin/2);
   }
 }
 
