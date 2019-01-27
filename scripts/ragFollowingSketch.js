@@ -53,7 +53,6 @@ var talList = {};
 var talCircles = {};
 var talName = undefined;
 var currentTal = undefined;
-var talName;
 var currentAvart;
 var strokeRadius1 = 20;
 var strokeRadius2 = 15;
@@ -258,6 +257,16 @@ function draw () {
 
   pop();
 
+  if (showTal.checked()) {
+    textAlign(CENTER, CENTER);
+    textSize(20);
+    textStyle(NORMAL);
+    stroke(backColor);
+    strokeWeight(5);
+    fill(frontColor);
+    text(talName, talX, talY);
+  }
+
   for (var i = 0; i < talBoxes.length; i++) {
     talBoxes[i].display();
   }
@@ -385,7 +394,7 @@ function CreateNavCursor () {
       if (this.x > talBox.x1 && this.x < talBox.x2) {
         talBox.on();
         currentTal = talBox.tal;
-        talName = talInfo[currentTal].name + "\n" + talInfo[currentTal].nameTrans;
+        talName = talBox.fullName;
         noTal = false;
       } else {
         talBox.off();
@@ -576,13 +585,12 @@ function CreateCurrentAvart () {
   }
 }
 
-function CreateTalCircle (talName) {
+function CreateTalCircle (tal) {
   this.strokeCircles = [];
   this.icons = [];
   this.avart;
 
-  var tal = talInfo[talName];
-  talName = tal.name + "\n" + tal.nameTrans;
+  var tal = talInfo[tal];
   this.avart = tal.avart;
   var theka = tal.theka;
   for (var i = 0; i < theka.length; i++) {
@@ -641,17 +649,14 @@ function CreateStrokeCircle (matra, vibhag, circleType, bol, avart) {
     this.txtSize = strokeRadius1 * 0.7;
     this.txtStyle = BOLD;
     this.bol = this.bol.toUpperCase();
-    this.volume = 1;
   } else if (circleType == 1) {
     this.radius = strokeRadius1;
     this.txtSize = strokeRadius1 * 0.75;
     this.txtStyle = BOLD;
-    this.volume = 1;
   } else if (circleType == 2){
     this.radius = strokeRadius2;
     this.txtSize = strokeRadius2 * 0.75;
     this.txtStyle = BOLD;
-    this.volume = 0.7;
   } else {
     this.radius = strokeRadius2;
     this.txtSize = strokeRadius2 * 0.75;
@@ -660,7 +665,6 @@ function CreateStrokeCircle (matra, vibhag, circleType, bol, avart) {
     this.txtStyle = NORMAL;
     this.strokeWeight = 0;
     this.txtW = 1;
-    this.volume = 0.7;
     increment = 1.05;
   }
 
@@ -715,6 +719,7 @@ function CreateIcon (matra, vibhag, avart) {
 function CreateTalBox (tal) {
   this.tal = tal.tal;
   this.name = talInfo[tal.tal].nameTrans;
+  this.fullName = talInfo[tal.tal].name + "\n" + this.name;
   this.h = 25;
   this.x1 = map(tal.start, 0, trackDuration, navBox.x1+navCursorW/2, navBox.x2-navCursorW/2);
   this.x2 = map(tal.end, 0, trackDuration, navBox.x1+navCursorW/2, navBox.x2-navCursorW/2);
