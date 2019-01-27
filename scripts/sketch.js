@@ -28,6 +28,8 @@ var link;
 
 var select;
 var buttonPlay;
+var showTheka;
+var showTal;
 
 var cursorTop;
 var cursorBottom;
@@ -54,6 +56,7 @@ var talName;
 var currentAvart;
 var strokeRadius1 = 20;
 var strokeRadius2 = 15;
+var iconDistance = 0.7;
 
 var failedLoading;
 var loaded = false;
@@ -89,6 +92,18 @@ function setup () {
   frontColor = color(120, 0, 0);
   shadeColor = color(120, 0, 0);
 
+  charger = new CreateCharger();
+  navBox = new createNavigationBox();
+  navCursor = new CreateNavCursor();
+  talCursor = new CreateTalCursor();
+
+  cursorTop = extraSpaceH + margin*7 + 50;
+  cursorBottom = navBox.y1-margin*4;
+  talX = extraSpaceW + margin + (mainSpace-2*margin)/3;
+  talY = cursorTop + (cursorBottom-cursorTop)/2.8 + strokeRadius1/2;
+  talRadius = (cursorBottom-cursorTop)/2.8;// (mainSpace-2*margin)*0.25;
+  melCursorX = extraSpaceW + (mainSpace-2*margin)*0.75;
+
   infoLink = select("#info-link");
   infoLink.position(width-60, extraSpaceH + margin*3.5 + 30);
   select = createSelect()
@@ -113,17 +128,24 @@ function setup () {
     .attribute("disabled", "true")
     .parent("sketch-holder");
 
-  charger = new CreateCharger();
-  navBox = new createNavigationBox();
-  navCursor = new CreateNavCursor();
-  talCursor = new CreateTalCursor();
-
-  cursorTop = extraSpaceH + margin*7 + 50;
-  cursorBottom = navBox.y1-margin*4;
-  talX = extraSpaceW + margin + (mainSpace-2*margin)/3;
-  talY = cursorTop + (cursorBottom-cursorTop)/2.8 + strokeRadius1/2;
-  talRadius = (cursorBottom-cursorTop)/2.8;// (mainSpace-2*margin)*0.25;
-  melCursorX = extraSpaceW + (mainSpace-2*margin)*0.75;
+  showTheka = createCheckbox('ṭhekā', true)
+    .position(extraSpaceW + margin, talY + talRadius)
+    .parent("sketch-holder");
+  showTal = createCheckbox('tāl', true)
+    .position(extraSpaceW + margin, showTheka.position()["y"] + showTheka.height)
+    .changed(function() {
+      showTheka.checked(showTal.checked());
+      if (showTal.checked()) {
+        showTheka.removeAttribute("disabled");
+      } else {
+        showTheka.attribute("disabled", "true");
+      }
+    })
+    .parent("sketch-holder");
+  showTheka.attribute("disabled", "true");
+  showTheka.attribute("style", "color:rgba(120, 0, 0, 0.5);");
+  showTal.attribute("disabled", "true");
+  showTal.attribute("style", "color:rgba(120, 0, 0, 0.5);");
 }
 
 function draw () {
@@ -204,20 +226,24 @@ function draw () {
     strokeWeight(2);
     ellipse(0, 0, talRadius, talRadius);
 
-    shade.update();
-    shade.display();
+    if (showTal.checked()) {
+      shade.update();
+      shade.display();
+    }
 
-    if (currentTal != undefined) {
+    if (currentTal != undefined && showTal.checked()) {
       var talToDraw = talCircles[currentTal];
       for (var i = 0; i < talToDraw.strokeCircles.length; i++) {
         talToDraw.strokeCircles[i].display();
       }
-      for (var i = 0; i < talToDraw.strokeCircles.length; i++) {
-        talToDraw.strokeCircles[i].displayTheka();
+      if (showTheka.checked()) {
+        for (var i = 0; i < talToDraw.strokeCircles.length; i++) {
+          talToDraw.strokeCircles[i].displayTheka();
+        }
+        for (var i = 0; i < talToDraw.icons.length; i++) {
+          talToDraw.icons[i].display();
+        }
       }
-      // for (var i = 0; i < talToDraw.icons.length; i++) {
-      //   talToDraw.icons[i].display();
-      // }
     }
     // talCursor.update();
     // talCursor.display();
@@ -244,7 +270,7 @@ function start () {
   loaded = false;
   currentTime = 0;
   talBoxes = [];
-  talSet = [];
+  talList = [];
   talName = undefined;
   samList = [];
   currentTal = undefined;
@@ -284,6 +310,13 @@ function start () {
   currentAvart = new CreateCurrentAvart();
   shade = new CreateShade();
   clock = new CreateClock;
+
+  showTheka.attribute("disabled", "true");
+  showTheka.attribute("style", "color:rgba(120, 0, 0, 0.5);");
+  showTheka.checked("true");
+  showTal.attribute("disabled", "true");
+  showTal.attribute("style", "color:rgba(120, 0, 0, 0.5);");
+  showTal.checked("true");
   buttonPlay.html("Carga el audio");
   buttonPlay.removeAttribute("disabled");
 }
@@ -553,12 +586,12 @@ function CreateTalCircle (talName) {
     var circleType;
     if (i == 0) {
       circleType = "sam";
-      // var icon = new CreateIcon(matra, vibhag, iconSamSize, this.avart);
-      // this.icons.push(icon);
+      var icon = new CreateIcon(matra, vibhag, this.avart);
+      this.icons.push(icon);
     } else if ((stroke.vibhag % 1) < 0.101) {
       circleType = 1;
-      // var icon = new CreateIcon(matra, vibhag, iconSize, this.avart);
-      // this.icons.push(icon);
+      var icon = new CreateIcon(matra, vibhag, this.avart);
+      this.icons.push(icon);
     } else if ((stroke.vibhag * 10 % 1) == 0) {
       circleType = 2;
     } else {
@@ -645,6 +678,25 @@ function CreateStrokeCircle (matra, vibhag, circleType, bol, avart) {
     textStyle(this.txtStyle);
     rotate(90);
     text(this.bol, 0, 0);
+    pop();
+  }
+}
+
+function CreateIcon (matra, vibhag, avart) {
+  this.circleAngle = map(matra, 0, avart, 0, 360);
+  this.x = talRadius * iconDistance * cos(this.circleAngle);
+  this.y = talRadius * iconDistance * sin(this.circleAngle);
+  if (vibhag == "tali") {
+    this.img = clap;
+  } else if (vibhag == "khali") {
+    this.img = wave;
+  }
+
+  this.display = function () {
+    push();
+    translate(this.x, this.y);
+    rotate(90);
+    image(this.img, 0, 0, strokeRadius2*2, strokeRadius2*2);
     pop();
   }
 }
@@ -752,6 +804,10 @@ function soundLoaded () {
   buttonPlay.removeAttribute("disabled");
   select.removeAttribute("disabled");
   loaded = true;
+  showTheka.removeAttribute("disabled");
+  showTheka.attribute("style", "color:rgba(120, 0, 0);");
+  showTal.removeAttribute("disabled");
+  showTal.attribute("style", "color:rgba(120, 0, 0);");
   var endLoading = millis();
   print("Track loaded in " + (endLoading-initLoading)/1000 + " seconds");
 }
