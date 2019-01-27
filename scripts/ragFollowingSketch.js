@@ -95,7 +95,7 @@ function setup () {
   shadeColor = color(120, 0, 0);
 
   charger = new CreateCharger();
-  navBox = new createNavigationBox();
+  navBox = new CreateNavigationBox();
   navCursor = new CreateNavCursor();
   talCursor = new CreateTalCursor();
 
@@ -332,7 +332,7 @@ function start () {
   buttonPlay.removeAttribute("disabled");
 }
 
-function createNavigationBox () {
+function CreateNavigationBox () {
   this.x1 = extraSpaceW + margin;
   this.x2 = width - margin;
   this.y1 = height - margin - navBoxH;
