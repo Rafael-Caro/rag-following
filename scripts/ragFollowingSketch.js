@@ -404,7 +404,7 @@ function CreateNavCursor () {
       currentTal = undefined;
       talName = undefined;
     }
-    if (navBox.x2 - navCursorW/2 - this.x < 0.01) {
+    if (navBox.x2 - navCursorW/2 - this.x < 0.1) {
       buttonPlay.html("¡Comienza!");
       track.stop();
       paused = true;
